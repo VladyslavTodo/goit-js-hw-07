@@ -25,6 +25,8 @@ ulGallery.innerHTML = createLi(galleryItems);
 
 ulGallery.addEventListener("click", clickImage);
 
+let instance = {}
+
 function clickImage(event) {
     event.preventDefault();
 
@@ -32,13 +34,17 @@ function clickImage(event) {
         return;
     }
 
-    const instance = basicLightbox.create(`
+    instance = basicLightbox.create(`
     <img src="${event.target.dataset.source}">`);
     instance.show();
 
-    ulGallery.addEventListener("keydown", (event) => {
-        if (event.code === "Escape") {
-            instance.close();
-        }
-    });
+    ulGallery.addEventListener("keydown", closeOnEscape);
 }
+
+function closeOnEscape(event) {
+    if (event.code === "Escape") {
+        instance.close();
+        ulGallery.removeEventListener("keydown", closeOnEscape);
+    }
+}
+
