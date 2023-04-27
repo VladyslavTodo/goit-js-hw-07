@@ -25,26 +25,33 @@ ulGallery.innerHTML = createLi(galleryItems);
 
 ulGallery.addEventListener("click", clickImage);
 
-let instance = {}
+let instance = {};
 
 function clickImage(event) {
     event.preventDefault();
-
     if (event.target.nodeName !== "IMG") {
         return;
     }
 
-    instance = basicLightbox.create(`
-    <img src="${event.target.dataset.source}">`);
-    instance.show();
+    instance = basicLightbox.create(
+        `
+    <img src="${event.target.dataset.source}">`,
+        {
+            onShow: (instance) => {
+                document.addEventListener("keydown", closeOnEscape);
+            },
 
-    ulGallery.addEventListener("keydown", closeOnEscape);
+            onClose: (instance) => {
+                document.removeEventListener("keydown", closeOnEscape);
+            },
+        }
+    );
+    instance.show();
 }
 
 function closeOnEscape(event) {
+    console.log(event.code);
     if (event.code === "Escape") {
         instance.close();
-        ulGallery.removeEventListener("keydown", closeOnEscape);
     }
 }
-
